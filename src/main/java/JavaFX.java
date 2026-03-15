@@ -10,9 +10,10 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import weather.Period;
 import weather.WeatherAPI;
+
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 
@@ -20,8 +21,9 @@ public class JavaFX extends Application {
 	TextField temperature,weather;
 	Stage window;
 	Scene scene1, scene2;
-	ArrayList<Period> forecast;
-	
+	//two distinct lists of weather data
+    ArrayList<Period> dailyForecast;
+    ArrayList<Period> hourlyForecast;
 	
 
 	public static void main(String[] args) {
@@ -33,38 +35,37 @@ public class JavaFX extends Application {
     public void start(Stage primaryStage) throws Exception {
 		window = primaryStage;
         window.setTitle("Mistix");
-        forecast = WeatherAPI.getForecast("LOT", 77, 70);
         
-        //initialize scene 1
+        dailyForecast = WeatherAPI.getForecast("LOT", 77, 70);
+        hourlyForecast = WeatherAPI.getHourlyForecast("LOT", 77, 70);
+        
+        if (dailyForecast == null) throw new RuntimeException("Forecast did not load");
+
+
+      //initialize scene 1
         setupScene1();
         window.setScene(scene1);
         window.show();
-
-        if (forecast == null) throw new RuntimeException("Forecast did not load");
-
-        HBox h1 = new HBox(20); 
+	} 
+	
+	private void setupScene1() {
+        HBox h1 = new HBox(20);
         h1.setStyle("-fx-padding: 20; -fx-alignment: center;");
 
         int columnsAdded = 0;
-        for (int i = 0; i < forecast.size() - 1 && columnsAdded < 3; i++) {
-        	Period dayP = forecast.get(i);
-            Period nightP = forecast.get(i + 1);
-            
-            // Only create a column if it's daytime (prevents showing "Tonight" as a main column)
+        for (int i = 0; i < dailyForecast.size() - 1 && columnsAdded < 3; i++) {
+            Period dayP = dailyForecast.get(i);
+            Period nightP = dailyForecast.get(i + 1);
             if (dayP.isDaytime && !nightP.isDaytime) {
-                // Pass true for the very first column added so it says "Today"
-                VBox dayColumn = createWeatherColumn(dayP, nightP, columnsAdded == 0);
-                h1.getChildren().add(dayColumn);
+                h1.getChildren().add(createWeatherColumn(dayP, nightP, columnsAdded == 0));
                 columnsAdded++;
                 i++;
             }
         }
-
-        Scene scene = new Scene(h1, 800, 600);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        scene1 = new Scene(h1, 800, 600);
     }
-
+	
+	
     private VBox createWeatherColumn(Period dayData, Period nightData, boolean isFirst) {
 //    	LocalDate forecastDate = dayData.startTime.toInstant()
 //                .atZone(ZoneId.systemDefault())
@@ -98,24 +99,34 @@ public class JavaFX extends Application {
         	setupScene2(dayData); 
         	window.setScene(scene2);
         });
+        
+        Label dayLabel = new Label("Day");
+        dayLabel.setStyle("-fx-font-weight: bold;");
+        
+        Label nightLabel = new Label("Night");
+        nightLabel.setStyle("-fx-font-weight: bold;");
+        
+        Label windLabel = new Label("Wind");
+        windLabel.setStyle("-fx-font-weight: bold;");
 
         //Day Section
         VBox daySection = new VBox(5, 
-            new Label("Day"), 
+            dayLabel, 
             new Label(dayData.temperature + "° " + dayData.shortForecast)
         );
 
         //Night Section
         VBox nightSection = new VBox(5, 
-            new Label("Night"), 
+            nightLabel,
             new Label(nightData.temperature + "° " + nightData.shortForecast)
         );
 
         //Wind Section
         VBox windSection = new VBox(5, 
-            new Label("Wind"), 
+            windLabel, 
             new Label(dayData.windSpeed + " " + dayData.windDirection)
         );
+        
 
         container.getChildren().addAll(headerBtn, daySection, nightSection, windSection);
         
@@ -123,45 +134,61 @@ public class JavaFX extends Application {
         return container;
     }
     
+    
+   
     private void setupScene2(Period selectedDay) {
-    	VBox layout = new VBox(20);
-        layout.setStyle("-fx-padding: 30; -fx-alignment: center;");
+        VBox layout = new VBox(20);
+        layout.setStyle("-fx-padding: 30; -fx-alignment: center; -fx-background-color: #f0f8ff;");
 
-        // Name of Day and Location from Wireframe 
         Label dayLabel = new Label(selectedDay.name); 
         Label locationLabel = new Label("Chicago");
         Label bigTemp = new Label(selectedDay.temperature + "°");
-        bigTemp.setStyle("-fx-font-size: 50px;"); // Make it big like the sketch
+        bigTemp.setStyle("-fx-font-size: 60px; -fx-font-weight: bold;");
 
-        // Back Button to return to the 3-day forecast 
-        Button backBtn = new Button("Go Back");
-        backBtn.setOnAction(e -> window.setScene(scene1));
-
-        // For the "Next 6 Hours" requirement, you'd pull from a different API call 
-        // or loop through hourly data if available. For now, placeholders:
-        HBox hourlyForecast = new HBox(10);
-        hourlyForecast.getChildren().add(new Label("Detailed: " + selectedDay.detailedForecast));
-
-        layout.getChildren().addAll(dayLabel, locationLabel, bigTemp, hourlyForecast, backBtn);
-        scene2 = new Scene(layout, 800, 600);
-    }
-
-    private void setupScene1() {
-        HBox h1 = new HBox(20);
-        h1.setStyle("-fx-padding: 20; -fx-alignment: center;");
-
-        int columnsAdded = 0;
-        for (int i = 0; i < forecast.size() - 1 && columnsAdded < 3; i++) {
-            Period dayP = forecast.get(i);
-            Period nightP = forecast.get(i + 1);
-            if (dayP.isDaytime && !nightP.isDaytime) {
-                h1.getChildren().add(createWeatherColumn(dayP, nightP, columnsAdded == 0));
-                columnsAdded++;
-                i++;
-            }
+        // Above and Beyond: Next 6 Hours [cite: 40]
+        Label hourlyHeader = new Label("Next 6 hours");
+        HBox hourlyHBox = new HBox(10);
+        hourlyHBox.setStyle("-fx-alignment: center;");
+        
+        for (int i = 0; i < 6 && i < hourlyForecast.size(); i++) {
+            hourlyHBox.getChildren().add(createHourlyBox(hourlyForecast.get(i)));
         }
-        scene1 = new Scene(h1, 800, 600);
+
+        // Details Row
+        HBox detailsRow = new HBox(30);
+        detailsRow.setStyle("-fx-alignment: center;");
+
+        // Above and Beyond: Precipitation 
+        VBox precipBox = new VBox(5);
+        precipBox.setStyle("-fx-border-color: black; -fx-padding: 10; -fx-border-width: 1;");
+        Label pVal = new Label("Precipitation: " + (selectedDay.probabilityOfPrecipitation != null ? selectedDay.probabilityOfPrecipitation.value : 0) + "%");
+        precipBox.getChildren().addAll(new Label("Precipitation ☂"), pVal);
+
+        VBox windBox = new VBox(5);
+        windBox.setStyle("-fx-border-color: black; -fx-padding: 10; -fx-border-width: 1;");
+        windBox.getChildren().addAll(new Label("Wind 🌬"), new Label("Speed: " + selectedDay.windSpeed), new Label("Dir: " + selectedDay.windDirection));
+
+        detailsRow.getChildren().addAll(precipBox, windBox);
+
+        Button backBtn = new Button("Go Back");
+        backBtn.setOnAction(e -> window.setScene(scene1)); // Requirement: Swap back 
+
+        layout.getChildren().addAll(dayLabel, locationLabel, bigTemp, new Label(selectedDay.shortForecast), 
+                                    hourlyHeader, hourlyHBox, detailsRow, backBtn);
+        scene2 = new Scene(layout, 850, 700);
     }
+    
+    private VBox createHourlyBox(Period hourData) {
+        VBox box = new VBox(5);
+        box.setStyle("-fx-border-color: #7f8c8d; -fx-padding: 10; -fx-alignment: center; -fx-background-color: white;");
+        
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("h a", Locale.ENGLISH);
+        String timeStr = hourData.startTime.toInstant().atZone(ZoneId.systemDefault()).format(dtf);
+        
+        box.getChildren().addAll(new Label(timeStr), new Label(hourData.temperature + "°"));
+        return box;
+    }
+
     	
 
 }
