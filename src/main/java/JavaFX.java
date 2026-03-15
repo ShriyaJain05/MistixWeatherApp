@@ -38,8 +38,8 @@ public class JavaFX extends Application {
 		window = primaryStage;
         window.setTitle("Mistix");
         
-        dailyForecast = WeatherAPI.getForecast("LOT", 77, 70);
-        hourlyForecast = WeatherAPI.getHourlyForecast("LOT", 77, 70);
+        dailyForecast = WeatherServiceProxy.getDaily("LOT", 77, 70);
+        hourlyForecast = WeatherServiceProxy.getHourly("LOT", 77, 70);
         
         if (dailyForecast == null) throw new RuntimeException("Forecast did not load");
 
@@ -82,57 +82,50 @@ public class JavaFX extends Application {
     }
 	
     private VBox createWeatherColumn(Period dayData, Period nightData, boolean isFirst) {
-//    	LocalDate forecastDate = dayData.startTime.toInstant()
-//                .atZone(ZoneId.systemDefault())
-//                .toLocalDate();
-//                
-//        // Get local time in Chicago
-//        LocalDate today = LocalDate.now(ZoneId.of("America/Chicago"));
-//        
-    	String headerText;
-        
-    	if (isFirst) {
+        // 1. Create Adapters for both Day and Night periods
+        WeatherAdapter dayAdapter = new WeatherAdapter(dayData);
+        WeatherAdapter nightAdapter = new WeatherAdapter(nightData);
+
+        // 2. Set the header text (Today or the Day Name)
+        String headerText;
+        if (isFirst) {
             headerText = "Today";
         } else {
-            // Use the Day Name from the API for future days
             headerText = dayData.startTime.toInstant()
                     .atZone(ZoneId.of("America/Chicago"))
                     .getDayOfWeek()
                     .getDisplayName(TextStyle.FULL, Locale.ENGLISH);
         }
-    	
+
+        // 3. Setup the main white column container
         VBox container = new VBox(15);
         container.setStyle(
                 "-fx-background-color: white;" +
-                        "-fx-padding: 20;" +
-                        "-fx-background-radius: 15;" +
-                        "-fx-border-radius: 15;" +
-                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15),10,0,0,4);" +
-                        "-fx-pref-width: 220;"
+                "-fx-padding: 20;" +
+                "-fx-background-radius: 15;" +
+                "-fx-border-radius: 15;" +
+                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15),10,0,0,4);" +
+                "-fx-pref-width: 220;"
         );
 
-        //scene1 setup
-
+        // 4. Create and style the Day button (navigates to Scene 2)
         Button headerBtn = new Button(headerText);
-
         headerBtn.setStyle(
                 "-fx-font-size:18px;" +
-                        "-fx-font-weight:bold;" +
-                        "-fx-background-color:#4facfe;" +
-                        "-fx-text-fill:white;" +
-                        "-fx-background-radius:10;" +
-                        "-fx-padding:8 14 8 14;"
+                "-fx-font-weight:bold;" +
+                "-fx-background-color:#4facfe;" +
+                "-fx-text-fill:white;" +
+                "-fx-background-radius:10;" +
+                "-fx-padding:8 14 8 14;"
         );
-
         headerBtn.setMaxWidth(Double.MAX_VALUE);
-        
-        //action
-        headerBtn.setOnAction(e-> {
-        	setupScene2(dayData); 
-        	window.setScene(scene2);
-        	window.setFullScreen(true);
+        headerBtn.setOnAction(e -> {
+            setupScene2(dayData); 
+            window.setScene(scene2);
+            window.setFullScreen(true);
         });
-        
+
+        // 5. Create category labels
         Label dayLabel = new Label("Day");
         dayLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
         
@@ -142,15 +135,17 @@ public class JavaFX extends Application {
         Label windLabel = new Label("Wind");
         windLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
 
-        //Day Section
-     // Helper to create the styled "tf" boxes from your wireframe
+        // 6. Use the Adapter and helper methods to create the internal boxes
+        // For Day and Night, we pass the raw data (temp/description)
         VBox daySection = createSectionBox(dayLabel, dayData.temperature, dayData.shortForecast);
         VBox nightSection = createSectionBox(nightLabel, nightData.temperature, nightData.shortForecast);
-        VBox windSection = createWindSection(windLabel, dayData.windSpeed + " " + dayData.windDirection);
-
-        container.getChildren().addAll(headerBtn, daySection, nightSection, windSection);
         
-  
+        // For Wind, we use the ADAPTER to get the formatted string
+        VBox windSection = createWindSection(windLabel, dayAdapter.getWind());
+
+        // 7. Combine everything into the container
+        container.getChildren().addAll(headerBtn, daySection, nightSection, windSection);
+
         return container;
     }
 
@@ -255,11 +250,9 @@ public class JavaFX extends Application {
         detailsRow.setStyle("-fx-alignment: center;");
 
         // Styled Precipitation Box
-        VBox precipBox = createDetailBox("Precipitation ☂", 
-            (selectedDay.probabilityOfPrecipitation != null ? selectedDay.probabilityOfPrecipitation.value : 0) + "%");
-
-        // Styled Wind Box
-        VBox windBox = createDetailBox("Wind 🌬", selectedDay.windSpeed + " " + selectedDay.windDirection);
+        WeatherAdapter adapter = new WeatherAdapter(selectedDay);
+        VBox precipBox = createDetailBox("Precipitation ☂", adapter.getPrecip());
+        VBox windBox = createDetailBox("Wind 🌬", adapter.getWind());
 
         detailsRow.getChildren().addAll(precipBox, windBox);
 
@@ -331,6 +324,39 @@ public class JavaFX extends Application {
         icon.setFitHeight(40);
 
         return icon;
+    }
+    
+    class WeatherAdapter {
+        private Period period;
+        public WeatherAdapter(Period period) { this.period = period; }
+        public String getWeatherSummary() {
+            return period.temperature + "° " + period.shortForecast;
+        }
+        public String getWind() { return period.windSpeed + " " + period.windDirection; }
+        public String getPrecip() {
+            return (period.probabilityOfPrecipitation != null ? period.probabilityOfPrecipitation.value : 0) + "%";
+        }
+    }
+    
+    static class WeatherServiceProxy {
+        private static ArrayList<Period> cachedDaily;
+        private static ArrayList<Period> cachedHourly;
+
+        public static ArrayList<Period> getDaily(String reg, int x, int y) {
+            if (cachedDaily == null) {
+                System.out.println("Proxy: Fetching fresh daily data...");
+                cachedDaily = WeatherAPI.getForecast(reg, x, y);
+            }
+            return cachedDaily;
+        }
+
+        public static ArrayList<Period> getHourly(String reg, int x, int y) {
+            if (cachedHourly == null) {
+                System.out.println("Proxy: Fetching fresh hourly data...");
+                cachedHourly = WeatherAPI.getHourlyForecast(reg, x, y);
+            }
+            return cachedHourly;
+        }
     }
 
 }
