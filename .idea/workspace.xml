@@ -8,16 +8,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/JavaFX.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/JavaFX.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/JavaFX.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/JavaFX.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/MyWeatherAPI.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/MyWeatherAPI.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/weather/Elevation.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weather/Elevation.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/weather/Geometry.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weather/Geometry.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/weather/Period.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weather/Period.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/weather/ProbabilityOfPrecipitation.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weather/ProbabilityOfPrecipitation.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/weather/Properties.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weather/Properties.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/weather/Root.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weather/Root.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/weather/WeatherAPI.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weather/WeatherAPI.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

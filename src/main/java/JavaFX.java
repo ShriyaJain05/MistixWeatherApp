@@ -48,31 +48,38 @@ public class JavaFX extends Application {
         setupScene1();
         window.setScene(scene1);
         window.show();
-	} 
-	
-	private void setupScene1() {
-		Label welcome = new Label("Welcome to Mistix!");
-		welcome.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-padding: 20 0 10 0;");
-		
-        HBox h1 = new HBox(20);
-        h1.setStyle("-fx-padding: 20; -fx-alignment: center;");
+	}
+
+    private void setupScene1() {
+        Label welcome = new Label("Mistix Weather");
+        welcome.setStyle("-fx-font-size: 34px; -fx-font-weight: bold; -fx-text-fill: white;");
+
+        HBox h1 = new HBox(30);
+        h1.setStyle("-fx-alignment: center;");
 
         int columnsAdded = 0;
         for (int i = 0; i < dailyForecast.size() - 1 && columnsAdded < 3; i++) {
             Period dayP = dailyForecast.get(i);
             Period nightP = dailyForecast.get(i + 1);
+
             if (dayP.isDaytime && !nightP.isDaytime) {
                 h1.getChildren().add(createWeatherColumn(dayP, nightP, columnsAdded == 0));
                 columnsAdded++;
                 i++;
             }
         }
-        VBox mainLayout = new VBox(10); 
-        mainLayout.setStyle("-fx-alignment: top-center; -fx-background-color: #f4f4f4;");
+
+        VBox mainLayout = new VBox(30);
+        mainLayout.setStyle(
+                "-fx-alignment: top-center;" +
+                        "-fx-padding: 40;" +
+                        "-fx-background-color: linear-gradient(to bottom,#4facfe,#00f2fe);"
+        );
+
         mainLayout.getChildren().addAll(welcome, h1);
+
         scene1 = new Scene(mainLayout, 850, 650);
     }
-	
 	
     private VBox createWeatherColumn(Period dayData, Period nightData, boolean isFirst) {
 //    	LocalDate forecastDate = dayData.startTime.toInstant()
@@ -95,11 +102,28 @@ public class JavaFX extends Application {
         }
     	
         VBox container = new VBox(15);
-        container.setStyle("-fx-border-color: black; -fx-padding: 15; -fx-border-width: 2; -fx-pref-width: 220;");
-        
+        container.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-padding: 20;" +
+                        "-fx-background-radius: 15;" +
+                        "-fx-border-radius: 15;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15),10,0,0,4);" +
+                        "-fx-pref-width: 220;"
+        );
+
         //scene1 setup
-        
+
         Button headerBtn = new Button(headerText);
+
+        headerBtn.setStyle(
+                "-fx-font-size:18px;" +
+                        "-fx-font-weight:bold;" +
+                        "-fx-background-color:#4facfe;" +
+                        "-fx-text-fill:white;" +
+                        "-fx-background-radius:10;" +
+                        "-fx-padding:8 14 8 14;"
+        );
+
         headerBtn.setMaxWidth(Double.MAX_VALUE);
         
         //action
@@ -119,35 +143,73 @@ public class JavaFX extends Application {
 
         //Day Section
      // Helper to create the styled "tf" boxes from your wireframe
-        VBox daySection = createSectionBox(dayLabel, dayData.temperature + "° " + dayData.shortForecast);
-        VBox nightSection = createSectionBox(nightLabel, nightData.temperature + "° " + nightData.shortForecast);
-        VBox windSection = createSectionBox(windLabel, dayData.windSpeed + " " + dayData.windDirection);
-        
+        VBox daySection = createSectionBox(dayLabel, dayData.temperature, dayData.shortForecast);
+        VBox nightSection = createSectionBox(nightLabel, nightData.temperature, nightData.shortForecast);
+        VBox windSection = createWindSection(windLabel, dayData.windSpeed + " " + dayData.windDirection);
 
         container.getChildren().addAll(headerBtn, daySection, nightSection, windSection);
         
   
         return container;
     }
-    
-    private VBox createSectionBox(Label title, String dataText) {
 
-        Label dataLabel = new Label(dataText);
-        dataLabel.setWrapText(true);
+    private VBox createWindSection(Label title, String windText) {
 
-        ImageView icon = getWeatherIcon(dataText);
+        Label windLabel = new Label(windText);
+        windLabel.setStyle("-fx-font-size:16px;");
 
-        VBox section = new VBox(5, title, icon, dataLabel);
-        
-        // Applying the dashed/dotted border style shown in your wireframe
-        section.setStyle("-fx-border-color: black; " +
-                         "-fx-border-style: dashed; " + 
-                         "-fx-border-width: 1; " +
-                         "-fx-padding: 10; " +
-                         "-fx-background-color: #ffffff;"); 
-        section.setPrefHeight(125);
-        section.setMinWidth(200);
-        
+        ImageView icon = getWeatherIcon("cloud");
+
+        VBox section = new VBox(6, title, icon, windLabel);
+
+        section.setStyle(
+                "-fx-background-color:#f8f9fa;" +
+                        "-fx-padding:12;" +
+                        "-fx-background-radius:10;" +
+                        "-fx-border-radius:10;" +
+                        "-fx-border-color:#e0e0e0;"
+        );
+
+        section.setAlignment(javafx.geometry.Pos.CENTER);
+        section.setFillWidth(true);
+
+        return section;
+    }
+
+    private VBox createSectionBox(Label title, int temp, String description) {
+
+        Label tempLabel = new Label(temp + "°");
+        tempLabel.setStyle(
+                "-fx-font-size:28px;" +
+                        "-fx-font-weight:bold;"
+        );
+
+        Label descLabel = new Label(description);
+        descLabel.setWrapText(true);
+
+        descLabel.setMaxWidth(Double.MAX_VALUE);
+        descLabel.setAlignment(javafx.geometry.Pos.CENTER);
+        descLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+
+        descLabel.setStyle("-fx-font-size:13px;");
+
+        ImageView icon = getWeatherIcon(description);
+
+        VBox section = new VBox(6, title, icon, tempLabel, descLabel);
+
+        section.setStyle(
+                "-fx-background-color:#f8f9fa;" +
+                        "-fx-padding:12;" +
+                        "-fx-background-radius:10;" +
+                        "-fx-border-radius:10;" +
+                        "-fx-border-color:#e0e0e0;"
+        );
+
+        section.setAlignment(javafx.geometry.Pos.CENTER);
+        section.setFillWidth(true);
+        section.setPrefHeight(200);
+        section.setMinWidth(250);
+
         return section;
     }
     
