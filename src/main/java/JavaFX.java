@@ -216,55 +216,90 @@ public class JavaFX extends Application {
     
    
     private void setupScene2(Period selectedDay) {
-        VBox layout = new VBox(20);
-        layout.setStyle("-fx-padding: 30; -fx-alignment: center; -fx-background-color: #f0f8ff;");
+        // 1. The main outer layout with the blue gradient
+        VBox mainOuter = new VBox(20);
+        mainOuter.setStyle("-fx-background-color: linear-gradient(to bottom, #4facfe, #00f2fe); " +
+                           "-fx-alignment: center; -fx-padding: 40;");
 
-        Label dayLabel = new Label(selectedDay.name); 
+        // 2. The white "Card" that holds all the info
+        VBox card = new VBox(25);
+        card.setStyle("-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 20; " +
+                      "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0, 0, 4); " +
+                      "-fx-max-width: 600; -fx-alignment: center;");
+
+        Label dayLabel = new Label(selectedDay.name);
+        dayLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
+
         Label locationLabel = new Label("Chicago");
-        Label bigTemp = new Label(selectedDay.temperature + "°");
-        bigTemp.setStyle("-fx-font-size: 60px; -fx-font-weight: bold;");
+        locationLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #7f8c8d;");
 
-        // Above and Beyond: Next 6 Hours [cite: 40]
-        Label hourlyHeader = new Label("Next 6 hours");
-        HBox hourlyHBox = new HBox(10);
-        hourlyHBox.setStyle("-fx-alignment: center;");
+        Label bigTemp = new Label(selectedDay.temperature + "°");
+        bigTemp.setStyle("-fx-font-size: 80px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
+
+        Label forecastDesc = new Label(selectedDay.shortForecast);
+        forecastDesc.setStyle("-fx-font-size: 18px; -fx-text-fill: #34495e;");
+
+        // Next 6 Hours Section
+        Label hourlyHeader = new Label("Next 6 Hours");
+        hourlyHeader.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
         
+        HBox hourlyHBox = new HBox(12);
+        hourlyHBox.setStyle("-fx-alignment: center;");
         for (int i = 0; i < 6 && i < hourlyForecast.size(); i++) {
             hourlyHBox.getChildren().add(createHourlyBox(hourlyForecast.get(i)));
         }
 
-        // Details Row
-        HBox detailsRow = new HBox(30);
+        // Details Row (Precip and Wind)
+        HBox detailsRow = new HBox(20);
         detailsRow.setStyle("-fx-alignment: center;");
 
-        // Above and Beyond: Precipitation 
-        VBox precipBox = new VBox(5);
-        precipBox.setStyle("-fx-border-color: black; -fx-padding: 10; -fx-border-width: 1;");
-        Label pVal = new Label("Precipitation: " + (selectedDay.probabilityOfPrecipitation != null ? selectedDay.probabilityOfPrecipitation.value : 0) + "%");
-        precipBox.getChildren().addAll(new Label("Precipitation ☂"), pVal);
+        // Styled Precipitation Box
+        VBox precipBox = createDetailBox("Precipitation ☂", 
+            (selectedDay.probabilityOfPrecipitation != null ? selectedDay.probabilityOfPrecipitation.value : 0) + "%");
 
-        VBox windBox = new VBox(5);
-        windBox.setStyle("-fx-border-color: black; -fx-padding: 10; -fx-border-width: 1;");
-        windBox.getChildren().addAll(new Label("Wind 🌬"), new Label("Speed: " + selectedDay.windSpeed), new Label("Direction " + selectedDay.windDirection));
+        // Styled Wind Box
+        VBox windBox = createDetailBox("Wind 🌬", selectedDay.windSpeed + " " + selectedDay.windDirection);
 
         detailsRow.getChildren().addAll(precipBox, windBox);
 
-        Button backBtn = new Button("Go Back");
-        backBtn.setOnAction(e -> window.setScene(scene1)); // Requirement: Swap back 
+        // Back Button - Styled like Scene 1 buttons
+        Button backBtn = new Button("← Go Back");
+        backBtn.setStyle("-fx-background-color: #4facfe; -fx-text-fill: white; -fx-font-weight: bold; " +
+                         "-fx-padding: 10 20; -fx-background-radius: 10; -fx-cursor: hand;");
+        backBtn.setOnAction(e -> window.setScene(scene1));
 
-        layout.getChildren().addAll(dayLabel, locationLabel, bigTemp, new Label(selectedDay.shortForecast), 
-                                    hourlyHeader, hourlyHBox, detailsRow, backBtn);
-        scene2 = new Scene(layout, 850, 700);
+        card.getChildren().addAll(dayLabel, locationLabel, bigTemp, forecastDesc, hourlyHeader, hourlyHBox, detailsRow, backBtn);
+        mainOuter.getChildren().add(card);
+
+        scene2 = new Scene(mainOuter, 850, 750);
     }
     
     private VBox createHourlyBox(Period hourData) {
-        VBox box = new VBox(5);
-        box.setStyle("-fx-border-color: #7f8c8d; -fx-padding: 10; -fx-alignment: center; -fx-background-color: white;");
-        
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("h a", Locale.ENGLISH);
         String timeStr = hourData.startTime.toInstant().atZone(ZoneId.systemDefault()).format(dtf);
+
+        Label timeLabel = new Label(timeStr);
+        timeLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: bold;");
         
-        box.getChildren().addAll(new Label(timeStr), new Label(hourData.temperature + "°"));
+        Label tempLabel = new Label(hourData.temperature + "°");
+        tempLabel.setStyle("-fx-font-size: 16px;");
+
+        VBox box = new VBox(4, timeLabel, tempLabel);
+        box.setStyle("-fx-background-color: #f8f9fa; -fx-padding: 10; -fx-alignment: center; " +
+                     "-fx-background-radius: 10; -fx-border-color: #e0e0e0; -fx-border-radius: 10;");
+        box.setMinWidth(70);
+        return box;
+    }
+    
+    private VBox createDetailBox(String title, String value) {
+        Label t = new Label(title);
+        t.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+        Label v = new Label(value);
+        v.setStyle("-fx-font-size: 14px;");
+        
+        VBox box = new VBox(5, t, v);
+        box.setStyle("-fx-background-color: #f8f9fa; -fx-padding: 15; -fx-background-radius: 10; " +
+                     "-fx-border-color: #e0e0e0; -fx-border-radius: 10; -fx-min-width: 180; -fx-alignment: center;");
         return box;
     }
 
