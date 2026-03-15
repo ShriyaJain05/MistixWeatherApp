@@ -4,7 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="16d11f11-37ee-4564-b5ad-a664fd95dea8" name="Changes" comment="" />
+    <list default="true" id="16d11f11-37ee-4564-b5ad-a664fd95dea8" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/JavaFX.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/JavaFX.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/JavaFX.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/JavaFX.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/MyWeatherAPI.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/MyWeatherAPI.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/weather/Elevation.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weather/Elevation.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/weather/Geometry.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weather/Geometry.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/weather/Period.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weather/Period.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/weather/ProbabilityOfPrecipitation.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weather/ProbabilityOfPrecipitation.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/weather/Properties.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weather/Properties.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/weather/Root.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weather/Root.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/weather/WeatherAPI.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/weather/WeatherAPI.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -16,6 +30,9 @@
         <option value="Class" />
       </list>
     </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 6
@@ -31,8 +48,11 @@
     "Maven.Homework3 [clean,compile,exec:java].executor": "Run",
     "Maven.Project2 Run.executor": "Run",
     "Maven.Project2 clean (run before submitting!).executor": "Run",
+    "Maven.Project2 clean .executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Space/Spring2026CS342Code/project2",
     "node.js.detected.package.eslint": "true",
@@ -40,6 +60,9 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -132,7 +155,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="jdk-11.0.21-corretto-11.0.21-f644763e9732-97de7592" />
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.30387.90" />
       </set>
     </attachedChunks>
   </component>

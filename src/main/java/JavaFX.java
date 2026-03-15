@@ -10,6 +10,8 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import weather.Period;
 import weather.WeatherAPI;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -133,7 +135,9 @@ public class JavaFX extends Application {
         Label dataLabel = new Label(dataText);
         dataLabel.setWrapText(true);
 
-        VBox section = new VBox(5, title, dataLabel);
+        ImageView icon = getWeatherIcon(dataText);
+
+        VBox section = new VBox(5, title, icon, dataLabel);
         
         // Applying the dashed/dotted border style shown in your wireframe
         section.setStyle("-fx-border-color: black; " +
@@ -202,6 +206,31 @@ public class JavaFX extends Application {
         return box;
     }
 
-    	
+    private ImageView getWeatherIcon(String forecast) {
+
+        String f = forecast.toLowerCase();
+        String path = "icons/cloud.png";
+
+        if (f.contains("sun") || f.contains("clear")) {
+            path = "icons/sunny.png";
+        }
+        else if (f.contains("rain") || f.contains("shower")) {
+            path = "icons/rain.png";
+        }
+        else if (f.contains("snow")) {
+            path = "icons/snow.png";
+        }
+        else if (f.contains("storm") || f.contains("thunder")) {
+            path = "icons/storm.png";
+        }
+
+        Image img = new Image(getClass().getResourceAsStream(path));
+        ImageView icon = new ImageView(img);
+
+        icon.setFitWidth(40);
+        icon.setFitHeight(40);
+
+        return icon;
+    }
 
 }
