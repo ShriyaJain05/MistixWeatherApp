@@ -154,7 +154,7 @@ public class JavaFX extends Application {
         Label windLabel = new Label(windText);
         windLabel.setStyle("-fx-font-size:16px;");
 
-        ImageView icon = getWeatherIcon("cloud");
+        ImageView icon = getWeatherIcon("wind");
 
         VBox section = new VBox(6, title, icon, windLabel);
 
@@ -315,6 +315,9 @@ public class JavaFX extends Application {
         }
         else if (f.contains("storm") || f.contains("thunder")) {
             path = "icons/storm.png";
+        }
+        else if (f.contains("wind")) {
+            path = "icons/wind.png";
         }
 
         Image img = new Image(getClass().getResourceAsStream(path));
