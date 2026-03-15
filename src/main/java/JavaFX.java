@@ -130,6 +130,7 @@ public class JavaFX extends Application {
         headerBtn.setOnAction(e-> {
         	setupScene2(dayData); 
         	window.setScene(scene2);
+        	window.setFullScreen(true);
         });
         
         Label dayLabel = new Label("Day");
@@ -266,7 +267,9 @@ public class JavaFX extends Application {
         Button backBtn = new Button("← Go Back");
         backBtn.setStyle("-fx-background-color: #4facfe; -fx-text-fill: white; -fx-font-weight: bold; " +
                          "-fx-padding: 10 20; -fx-background-radius: 10; -fx-cursor: hand;");
-        backBtn.setOnAction(e -> window.setScene(scene1));
+        backBtn.setOnAction(e -> {window.setScene(scene1);
+        window.setFullScreen(true);
+        });
 
         card.getChildren().addAll(dayLabel, locationLabel, bigTemp, forecastDesc, hourlyHeader, hourlyHBox, detailsRow, backBtn);
         mainOuter.getChildren().add(card);
@@ -311,11 +314,11 @@ public class JavaFX extends Application {
         if (f.contains("sun") || f.contains("clear")) {
             path = "icons/sunny.png";
         }
-        else if (f.contains("rain") || f.contains("shower")) {
-            path = "icons/rain.png";
-        }
         else if (f.contains("snow")) {
             path = "icons/snow.png";
+        }
+        else if (f.contains("rain") || f.contains("shower")) {
+            path = "icons/rain.png";
         }
         else if (f.contains("storm") || f.contains("thunder")) {
             path = "icons/storm.png";
