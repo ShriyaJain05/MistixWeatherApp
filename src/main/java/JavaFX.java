@@ -49,6 +49,9 @@ public class JavaFX extends Application {
 	} 
 	
 	private void setupScene1() {
+		Label welcome = new Label("Welcome to Mistix!");
+		welcome.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-padding: 20 0 10 0;");
+		
         HBox h1 = new HBox(20);
         h1.setStyle("-fx-padding: 20; -fx-alignment: center;");
 
@@ -62,7 +65,10 @@ public class JavaFX extends Application {
                 i++;
             }
         }
-        scene1 = new Scene(h1, 800, 600);
+        VBox mainLayout = new VBox(10); 
+        mainLayout.setStyle("-fx-alignment: top-center; -fx-background-color: #f4f4f4;");
+        mainLayout.getChildren().addAll(welcome, h1);
+        scene1 = new Scene(mainLayout, 850, 650);
     }
 	
 	
@@ -101,37 +107,44 @@ public class JavaFX extends Application {
         });
         
         Label dayLabel = new Label("Day");
-        dayLabel.setStyle("-fx-font-weight: bold;");
+        dayLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
         
         Label nightLabel = new Label("Night");
-        nightLabel.setStyle("-fx-font-weight: bold;");
+        nightLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
         
         Label windLabel = new Label("Wind");
-        windLabel.setStyle("-fx-font-weight: bold;");
+        windLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
 
         //Day Section
-        VBox daySection = new VBox(5, 
-            dayLabel, 
-            new Label(dayData.temperature + "° " + dayData.shortForecast)
-        );
-
-        //Night Section
-        VBox nightSection = new VBox(5, 
-            nightLabel,
-            new Label(nightData.temperature + "° " + nightData.shortForecast)
-        );
-
-        //Wind Section
-        VBox windSection = new VBox(5, 
-            windLabel, 
-            new Label(dayData.windSpeed + " " + dayData.windDirection)
-        );
+     // Helper to create the styled "tf" boxes from your wireframe
+        VBox daySection = createSectionBox(dayLabel, dayData.temperature + "° " + dayData.shortForecast);
+        VBox nightSection = createSectionBox(nightLabel, nightData.temperature + "° " + nightData.shortForecast);
+        VBox windSection = createSectionBox(windLabel, dayData.windSpeed + " " + dayData.windDirection);
         
 
         container.getChildren().addAll(headerBtn, daySection, nightSection, windSection);
         
   
         return container;
+    }
+    
+    private VBox createSectionBox(Label title, String dataText) {
+
+        Label dataLabel = new Label(dataText);
+        dataLabel.setWrapText(true);
+
+        VBox section = new VBox(5, title, dataLabel);
+        
+        // Applying the dashed/dotted border style shown in your wireframe
+        section.setStyle("-fx-border-color: black; " +
+                         "-fx-border-style: dashed; " + 
+                         "-fx-border-width: 1; " +
+                         "-fx-padding: 10; " +
+                         "-fx-background-color: #ffffff;"); 
+        section.setPrefHeight(125);
+        section.setMinWidth(200);
+        
+        return section;
     }
     
     
@@ -166,7 +179,7 @@ public class JavaFX extends Application {
 
         VBox windBox = new VBox(5);
         windBox.setStyle("-fx-border-color: black; -fx-padding: 10; -fx-border-width: 1;");
-        windBox.getChildren().addAll(new Label("Wind 🌬"), new Label("Speed: " + selectedDay.windSpeed), new Label("Dir: " + selectedDay.windDirection));
+        windBox.getChildren().addAll(new Label("Wind 🌬"), new Label("Speed: " + selectedDay.windSpeed), new Label("Direction " + selectedDay.windDirection));
 
         detailsRow.getChildren().addAll(precipBox, windBox);
 
