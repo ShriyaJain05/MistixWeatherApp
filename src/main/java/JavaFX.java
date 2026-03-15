@@ -12,7 +12,8 @@ import weather.Period;
 import weather.WeatherAPI;
 import java.time.format.TextStyle;
 import java.util.Locale;
-
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 
 public class JavaFX extends Application {
@@ -65,18 +66,25 @@ public class JavaFX extends Application {
     }
 
     private VBox createWeatherColumn(Period dayData, Period nightData, boolean isFirst) {
-        String headerText;
+//    	LocalDate forecastDate = dayData.startTime.toInstant()
+//                .atZone(ZoneId.systemDefault())
+//                .toLocalDate();
+//                
+//        // Get local time in Chicago
+//        LocalDate today = LocalDate.now(ZoneId.of("America/Chicago"));
+//        
+    	String headerText;
         
-        if (isFirst) {
+    	if (isFirst) {
             headerText = "Today";
         } else {
-            // Get actual day name
+            // Use the Day Name from the API for future days
             headerText = dayData.startTime.toInstant()
-                    .atZone(java.time.ZoneId.systemDefault())
+                    .atZone(ZoneId.of("America/Chicago"))
                     .getDayOfWeek()
                     .getDisplayName(TextStyle.FULL, Locale.ENGLISH);
         }
-
+    	
         VBox container = new VBox(15);
         container.setStyle("-fx-border-color: black; -fx-padding: 15; -fx-border-width: 2; -fx-pref-width: 220;");
         
