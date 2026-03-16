@@ -23,7 +23,7 @@ public class JavaFX extends Application {
 	TextField temperature,weather;
 	Stage window;
 	Scene scene1, scene2; // two different scenes
-	
+    boolean wasFullScreen = false; //tracks fullscreen state when switching scenes
 	
 	//two distinct lists of weather data
     ArrayList<Period> dailyForecast; // for the exact forecast temperature
@@ -127,9 +127,10 @@ public class JavaFX extends Application {
         );
         headerBtn.setMaxWidth(Double.MAX_VALUE);
         headerBtn.setOnAction(e -> {
-            setupScene2(dayData); 
+            wasFullScreen = window.isFullScreen(); //remember state
+            setupScene2(dayData);
             window.setScene(scene2);
-            window.setFullScreen(true);
+            window.setFullScreen(wasFullScreen); //restore state
         });
 
         //making the labels for each container and the style
@@ -273,10 +274,11 @@ public class JavaFX extends Application {
         Button backBtn = new Button("← Go Back");
         backBtn.setStyle("-fx-background-color: #4facfe; -fx-text-fill: white; -fx-font-weight: bold; " +
                          "-fx-padding: 10 20; -fx-background-radius: 10; -fx-cursor: hand;");
-        backBtn.setOnAction(e -> {window.setScene(scene1); //action so it can switch scenes
-        window.setFullScreen(true);
+        backBtn.setOnAction(e -> {
+            window.setScene(scene1);
+            window.setFullScreen(wasFullScreen); //restore state
         });
-        
+
         //getting all the information and putting it into the box
         card.getChildren().addAll(dayLabel, locationLabel, bigTemp, forecastDesc, hourlyHeader, hourlyHBox, detailsRow, backBtn);
         mainOuter.getChildren().add(card);
