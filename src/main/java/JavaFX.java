@@ -22,22 +22,26 @@ import java.util.ArrayList;
 public class JavaFX extends Application {
 	TextField temperature,weather;
 	Stage window;
-	Scene scene1, scene2;
-	//two distinct lists of weather data
-    ArrayList<Period> dailyForecast;
-    ArrayList<Period> hourlyForecast;
+	Scene scene1, scene2; // two different scenes
 	
-
+	
+	//two distinct lists of weather data
+    ArrayList<Period> dailyForecast; // for the exact forecast temperature
+    ArrayList<Period> hourlyForecast; // for the hourly 
+	
+    //main 
 	public static void main(String[] args) {
 		launch(args);
 	}
+	
 
-	//feel free to remove the starter code from this method
+	// Start method that initializes the scene 1
 	@Override
     public void start(Stage primaryStage) throws Exception {
 		window = primaryStage;
-        window.setTitle("Mistix");
+        window.setTitle("Mistix"); //weather app name
         
+        //Using proxy to pull out the data from the NWS API
         dailyForecast = WeatherServiceProxy.getDaily("LOT", 77, 70);
         hourlyForecast = WeatherServiceProxy.getHourly("LOT", 77, 70);
         
@@ -50,6 +54,8 @@ public class JavaFX extends Application {
         window.show();
 	}
 
+
+	//Method that sets up scene 1 with a welcome screen to display the first scene of the 3 day forecast
     private void setupScene1() {
         Label welcome = new Label("Mistix Weather");
         welcome.setStyle("-fx-font-size: 34px; -fx-font-weight: bold; -fx-text-fill: white;");
@@ -80,13 +86,14 @@ public class JavaFX extends Application {
 
         scene1 = new Scene(mainLayout, 850, 650);
     }
+    
 	
     private VBox createWeatherColumn(Period dayData, Period nightData, boolean isFirst) {
-        // 1. Create Adapters for both Day and Night periods
+        //adapters for both Day and Night
         WeatherAdapter dayAdapter = new WeatherAdapter(dayData);
         WeatherAdapter nightAdapter = new WeatherAdapter(nightData);
 
-        // 2. Set the header text (Today or the Day Name)
+        //setting up the header text to show which day it is.
         String headerText;
         if (isFirst) {
             headerText = "Today";
@@ -97,7 +104,7 @@ public class JavaFX extends Application {
                     .getDisplayName(TextStyle.FULL, Locale.ENGLISH);
         }
 
-        // 3. Setup the main white column container
+        //setting up the main white column container
         VBox container = new VBox(15);
         container.setStyle(
                 "-fx-background-color: white;" +
@@ -108,7 +115,7 @@ public class JavaFX extends Application {
                 "-fx-pref-width: 220;"
         );
 
-        // 4. Create and style the Day button (navigates to Scene 2)
+        //creating and style the Day button 
         Button headerBtn = new Button(headerText);
         headerBtn.setStyle(
                 "-fx-font-size:18px;" +
@@ -125,7 +132,7 @@ public class JavaFX extends Application {
             window.setFullScreen(true);
         });
 
-        // 5. Create category labels
+        //making the labels for each container and the style
         Label dayLabel = new Label("Day");
         dayLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
         
@@ -135,26 +142,27 @@ public class JavaFX extends Application {
         Label windLabel = new Label("Wind");
         windLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
 
-        // 6. Use the Adapter and helper methods to create the internal boxes
-        // For Day and Night, we pass the raw data (temp/description)
+        //using the Adapter and helper methods to create the smaller boxes inside the containers, and helps pass the data for Day and Night categories
         VBox daySection = createSectionBox(dayLabel, dayData.temperature, dayData.shortForecast);
         VBox nightSection = createSectionBox(nightLabel, nightData.temperature, nightData.shortForecast);
         
-        // For Wind, we use the ADAPTER to get the formatted string
+        //using the adapter for the wind to format the string the right way
         VBox windSection = createWindSection(windLabel, dayAdapter.getWind());
 
-        // 7. Combine everything into the container
+        //now put everything into the container to show all the data and formatting
         container.getChildren().addAll(headerBtn, daySection, nightSection, windSection);
 
-        return container;
+        return container; //return the whole container
     }
-
+    
+    
+    //creating the wind section box in the container with the wind icon and the correct formatting plus style
     private VBox createWindSection(Label title, String windText) {
 
         Label windLabel = new Label(windText);
-        windLabel.setStyle("-fx-font-size:16px;");
+        windLabel.setStyle("-fx-font-size:16px;"); //size
 
-        ImageView icon = getWeatherIcon("wind");
+        ImageView icon = getWeatherIcon("wind"); //icon
 
         VBox section = new VBox(6, title, icon, windLabel);
 
@@ -172,6 +180,8 @@ public class JavaFX extends Application {
         return section;
     }
 
+    
+    //creating the day and night boxes, takes in the data to choose the right icon, the right box size and the correct formatting/style
     private VBox createSectionBox(Label title, int temp, String description) {
 
         Label tempLabel = new Label(temp + "°");
@@ -200,7 +210,8 @@ public class JavaFX extends Application {
                         "-fx-border-radius:10;" +
                         "-fx-border-color:#e0e0e0;"
         );
-
+        
+        //size of the box
         section.setAlignment(javafx.geometry.Pos.CENTER);
         section.setFillWidth(true);
         section.setPrefHeight(200);
@@ -210,19 +221,21 @@ public class JavaFX extends Application {
     }
     
     
-   
+    //setting up scene 2 where it shows the one day forecast with the day, temperature, weather description, 
+    //a next 6 hour forecast, precipitation, wind and with a back button to navigate back to scene 1
     private void setupScene2(Period selectedDay) {
-        // 1. The main outer layout with the blue gradient
+        //the background layer of the blue gradient
         VBox mainOuter = new VBox(20);
         mainOuter.setStyle("-fx-background-color: linear-gradient(to bottom, #4facfe, #00f2fe); " +
                            "-fx-alignment: center; -fx-padding: 40;");
 
-        // 2. The white "Card" that holds all the info
+        //the white box that holds all the information
         VBox card = new VBox(25);
         card.setStyle("-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 20; " +
                       "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0, 0, 4); " +
                       "-fx-max-width: 600; -fx-alignment: center;");
-
+        
+        //Labels for the day, name of the city, temperature, short description, next 6 hours, 
         Label dayLabel = new Label(selectedDay.name);
         dayLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
 
@@ -235,9 +248,9 @@ public class JavaFX extends Application {
         Label forecastDesc = new Label(selectedDay.shortForecast);
         forecastDesc.setStyle("-fx-font-size: 18px; -fx-text-fill: #34495e;");
 
-        // Next 6 Hours Section
         Label hourlyHeader = new Label("Next 6 Hours");
         hourlyHeader.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
+        
         
         HBox hourlyHBox = new HBox(12);
         hourlyHBox.setStyle("-fx-alignment: center;");
@@ -245,35 +258,39 @@ public class JavaFX extends Application {
             hourlyHBox.getChildren().add(createHourlyBox(hourlyForecast.get(i)));
         }
 
-        // Details Row (Precip and Wind)
+        //the box to hold the percipitation and wind boxes
         HBox detailsRow = new HBox(20);
         detailsRow.setStyle("-fx-alignment: center;");
 
-        // Styled Precipitation Box
+        //using adpater and creating the boxes for precipitation and the wind
         WeatherAdapter adapter = new WeatherAdapter(selectedDay);
         VBox precipBox = createDetailBox("Precipitation ☂", adapter.getPrecip());
         VBox windBox = createDetailBox("Wind 🌬", adapter.getWind());
 
         detailsRow.getChildren().addAll(precipBox, windBox);
 
-        // Back Button - Styled like Scene 1 buttons
+        //creating the back button to go between scenes
         Button backBtn = new Button("← Go Back");
         backBtn.setStyle("-fx-background-color: #4facfe; -fx-text-fill: white; -fx-font-weight: bold; " +
                          "-fx-padding: 10 20; -fx-background-radius: 10; -fx-cursor: hand;");
-        backBtn.setOnAction(e -> {window.setScene(scene1);
+        backBtn.setOnAction(e -> {window.setScene(scene1); //action so it can switch scenes
         window.setFullScreen(true);
         });
-
+        
+        //getting all the information and putting it into the box
         card.getChildren().addAll(dayLabel, locationLabel, bigTemp, forecastDesc, hourlyHeader, hourlyHBox, detailsRow, backBtn);
         mainOuter.getChildren().add(card);
 
-        scene2 = new Scene(mainOuter, 850, 750);
+        scene2 = new Scene(mainOuter, 850, 750); //size check
     }
-    
+ 
+    //creating the hourly boxes for the next 6 hours, 6 different sections that each have the 
+    //data of the weather as time progresses with the time
     private VBox createHourlyBox(Period hourData) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("h a", Locale.ENGLISH);
         String timeStr = hourData.startTime.toInstant().atZone(ZoneId.systemDefault()).format(dtf);
-
+        
+        //labels of the times and temperature
         Label timeLabel = new Label(timeStr);
         timeLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: bold;");
         
@@ -281,12 +298,14 @@ public class JavaFX extends Application {
         tempLabel.setStyle("-fx-font-size: 16px;");
 
         VBox box = new VBox(4, timeLabel, tempLabel);
+        //style of the box with the color and correct formatting
         box.setStyle("-fx-background-color: #f8f9fa; -fx-padding: 10; -fx-alignment: center; " +
                      "-fx-background-radius: 10; -fx-border-color: #e0e0e0; -fx-border-radius: 10;");
         box.setMinWidth(70);
         return box;
     }
     
+    //DESCRIBE SHRIYA CHRISTINA
     private VBox createDetailBox(String title, String value) {
         Label t = new Label(title);
         t.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
@@ -299,6 +318,8 @@ public class JavaFX extends Application {
         return box;
     }
 
+    
+    //conditions to change the icons based on the weather description
     private ImageView getWeatherIcon(String forecast) {
 
         String f = forecast.toLowerCase();
@@ -329,6 +350,8 @@ public class JavaFX extends Application {
         return icon;
     }
     
+    
+    //Adaptor design pattern DESCRIBE SHRIYA CHRISTINA
     class WeatherAdapter {
         private Period period;
         public WeatherAdapter(Period period) { this.period = period; }
@@ -341,6 +364,7 @@ public class JavaFX extends Application {
         }
     }
     
+    //Proxy design pattern DESCRIBE SHRIYA CHRISTINA
     static class WeatherServiceProxy {
         private static ArrayList<Period> cachedDaily;
         private static ArrayList<Period> cachedHourly;
