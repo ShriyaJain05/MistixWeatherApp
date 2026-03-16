@@ -305,7 +305,7 @@ public class JavaFX extends Application {
         return box;
     }
     
-    //DESCRIBE SHRIYA CHRISTINA
+    //styling the box with the title and temperature value
     private VBox createDetailBox(String title, String value) {
         Label t = new Label(title);
         t.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
@@ -351,7 +351,7 @@ public class JavaFX extends Application {
     }
     
     
-    //Adaptor design pattern DESCRIBE SHRIYA CHRISTINA
+    //Adaptor design pattern
     class WeatherAdapter {
         private Period period;
         public WeatherAdapter(Period period) { this.period = period; }
@@ -364,7 +364,7 @@ public class JavaFX extends Application {
         }
     }
     
-    //Proxy design pattern DESCRIBE SHRIYA CHRISTINA
+    //Proxy design pattern DESCRIBE
     static class WeatherServiceProxy {
         private static ArrayList<Period> cachedDaily;
         private static ArrayList<Period> cachedHourly;
