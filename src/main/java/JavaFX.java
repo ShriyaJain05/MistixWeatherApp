@@ -221,12 +221,14 @@ public class JavaFX extends Application {
 
         return section;
     }
+    
 
     //convert temperature if needed
     private int convertTemp(int tempF) {
         if (!isCelsius) return tempF;
         return (int)Math.round((tempF - 32) * 5.0 / 9.0);
     }
+    
     
     //setting up scene 2 where it shows the one day forecast with the day, temperature, weather description, 
     //a next 6 hour forecast, precipitation, wind and with a back button to navigate back to scene 1
@@ -416,25 +418,36 @@ public class JavaFX extends Application {
         }
     }
     
-    //Proxy design pattern DESCRIBE
+    //Proxy design patter
+    //Defining the proxy class and static because it is nested
     static class WeatherServiceProxy {
-        private static ArrayList<Period> cachedDaily;
-        private static ArrayList<Period> cachedHourly;
-
+    	//storage arrays
+        private static ArrayList<Period> cachedDaily; //one specifically for the daily forecast
+        private static ArrayList<Period> cachedHourly; //one specifically for the hourly forecast
+        
+        //Method used to request the daily weather from the NWS API. It takes in the region and the coordinates for Chicago
         public static ArrayList<Period> getDaily(String reg, int x, int y) {
-            if (cachedDaily == null) {
-                System.out.println("Proxy: Fetching fresh daily data...");
+        	
+            //checks if we have already fetched the data needed and if the cache for the daily is null, 
+        	//then this is the first time its being call
+        	if (cachedDaily == null) {
+                System.out.println("Proxy: Fetching fresh daily data..."); //printing to prove that the proxy is working
                 cachedDaily = WeatherAPI.getForecast(reg, x, y);
             }
-            return cachedDaily;
+            return cachedDaily; //returning the data
         }
-
+        
+        
+        //Same method logic used to request the hourly weather from the NWS API. It takes in the region and the coordinates for Chicago
         public static ArrayList<Period> getHourly(String reg, int x, int y) {
-            if (cachedHourly == null) {
-                System.out.println("Proxy: Fetching fresh hourly data...");
+            
+        	//same logic and checks if we have already fetched the data needed and if the cache for the daily is null, 
+        	//then this is the first time its being call
+        	if (cachedHourly == null) {
+                System.out.println("Proxy: Fetching fresh hourly data..."); //printing to prove that the proxy is working
                 cachedHourly = WeatherAPI.getHourlyForecast(reg, x, y);
             }
-            return cachedHourly;
+            return cachedHourly; //returning the data
         }
     }
 
