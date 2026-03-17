@@ -24,7 +24,8 @@ public class JavaFX extends Application {
 	Stage window;
 	Scene scene1, scene2; // two different scenes
     boolean wasFullScreen = false; //tracks fullscreen state when switching scenes
-	
+    private static final ZoneId CHICAGO_ZONE = ZoneId.of("America/Chicago");
+    boolean isCelsius = false; //temperature unit toggle
 	//two distinct lists of weather data
     ArrayList<Period> dailyForecast; // for the exact forecast temperature
     ArrayList<Period> hourlyForecast; // for the hourly 
@@ -185,7 +186,7 @@ public class JavaFX extends Application {
     //creating the day and night boxes, takes in the data to choose the right icon, the right box size and the correct formatting/style
     private VBox createSectionBox(Label title, int temp, String description) {
 
-        Label tempLabel = new Label(temp + "°");
+        Label tempLabel = new Label(convertTemp(temp) + "°" + (isCelsius ? "C" : "F"));
         tempLabel.setStyle(
                 "-fx-font-size:28px;" +
                         "-fx-font-weight:bold;"
@@ -220,7 +221,12 @@ public class JavaFX extends Application {
 
         return section;
     }
-    
+
+    //convert temperature if needed
+    private int convertTemp(int tempF) {
+        if (!isCelsius) return tempF;
+        return (int)Math.round((tempF - 32) * 5.0 / 9.0);
+    }
     
     //setting up scene 2 where it shows the one day forecast with the day, temperature, weather description, 
     //a next 6 hour forecast, precipitation, wind and with a back button to navigate back to scene 1
@@ -243,11 +249,22 @@ public class JavaFX extends Application {
         Label locationLabel = new Label("Chicago");
         locationLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #7f8c8d;");
 
-        Label bigTemp = new Label(selectedDay.temperature + "°");
+        Label bigTemp = new Label(convertTemp(selectedDay.temperature) + "°" + (isCelsius ? "C" : "F"));
         bigTemp.setStyle("-fx-font-size: 80px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
 
         Label forecastDesc = new Label(selectedDay.shortForecast);
         forecastDesc.setStyle("-fx-font-size: 18px; -fx-text-fill: #34495e;");
+
+        //button to toggle temperature unit
+        Button unitToggle = new Button(isCelsius ? "Switch to °F" : "Switch to °C");
+        unitToggle.setStyle("-fx-background-color:#4facfe; -fx-text-fill:white; -fx-font-weight:bold; " +
+                "-fx-padding:6 14; -fx-background-radius:10;");
+
+        unitToggle.setOnAction(e -> {
+            isCelsius = !isCelsius; //flip unit
+            setupScene2(selectedDay); //refresh scene
+            window.setScene(scene2);
+        });
 
         Label hourlyHeader = new Label("Next 6 Hours");
         hourlyHeader.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
@@ -255,7 +272,39 @@ public class JavaFX extends Application {
         
         HBox hourlyHBox = new HBox(12);
         hourlyHBox.setStyle("-fx-alignment: center;");
-        for (int i = 0; i < 6 && i < hourlyForecast.size(); i++) {
+
+        //logic to determine which 6 hours to show
+        int startIndex = 0;
+        java.time.ZonedDateTime now = java.time.ZonedDateTime.now(CHICAGO_ZONE);
+
+        //if selected day is today, start from current hour
+        boolean isToday = selectedDay.isDaytime &&
+                selectedDay.startTime.toInstant().atZone(CHICAGO_ZONE).toLocalDate()
+                        .equals(now.toLocalDate());
+
+        if (isToday) {
+            for (int i = 0; i < hourlyForecast.size(); i++) {
+                java.time.ZonedDateTime hourTime = hourlyForecast.get(i).startTime.toInstant().atZone(CHICAGO_ZONE);
+                if (!hourTime.isBefore(now)) {
+                    startIndex = i;
+                    break;
+                }
+            }
+        }
+
+        //if future day, start at 8 AM
+        else {
+            for (int i = 0; i < hourlyForecast.size(); i++) {
+                java.time.ZonedDateTime hourTime = hourlyForecast.get(i).startTime.toInstant().atZone(CHICAGO_ZONE);
+                if (hourTime.getHour() >= 8) {
+                    startIndex = i;
+                    break;
+                }
+            }
+        }
+
+        //add next 6 hours
+        for (int i = startIndex; i < startIndex + 6 && i < hourlyForecast.size(); i++) {
             hourlyHBox.getChildren().add(createHourlyBox(hourlyForecast.get(i)));
         }
 
@@ -280,7 +329,8 @@ public class JavaFX extends Application {
         });
 
         //getting all the information and putting it into the box
-        card.getChildren().addAll(dayLabel, locationLabel, bigTemp, forecastDesc, hourlyHeader, hourlyHBox, detailsRow, backBtn);
+        card.getChildren().addAll(dayLabel, locationLabel, bigTemp, forecastDesc, unitToggle,
+                hourlyHeader, hourlyHBox, detailsRow, backBtn);
         mainOuter.getChildren().add(card);
 
         scene2 = new Scene(mainOuter, 850, 750); //size check
@@ -290,13 +340,13 @@ public class JavaFX extends Application {
     //data of the weather as time progresses with the time
     private VBox createHourlyBox(Period hourData) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("h a", Locale.ENGLISH);
-        String timeStr = hourData.startTime.toInstant().atZone(ZoneId.systemDefault()).format(dtf);
-        
+        String timeStr = hourData.startTime.toInstant().atZone(CHICAGO_ZONE).format(dtf);
+
         //labels of the times and temperature
         Label timeLabel = new Label(timeStr);
         timeLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: bold;");
-        
-        Label tempLabel = new Label(hourData.temperature + "°");
+
+        Label tempLabel = new Label(convertTemp(hourData.temperature) + "°" + (isCelsius ? "C" : "F"));
         tempLabel.setStyle("-fx-font-size: 16px;");
 
         VBox box = new VBox(4, timeLabel, tempLabel);
