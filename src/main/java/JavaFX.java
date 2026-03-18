@@ -405,20 +405,24 @@ public class JavaFX extends Application {
     }
     
     
-    //Adaptor design pattern
+    //Adapter design pattern
+    //defining the adapter class to translate the raw data into user readable data/strings
     class WeatherAdapter {
-        private Period period;
-        public WeatherAdapter(Period period) { this.period = period; }
+        private Period period; //the original object to hold the data from the NWS API
+        public WeatherAdapter(Period period) { this.period = period; } //constructor to find the specific weather period
+        //Formatting the weather summary to show the temperature data as "70° Rain" which is easy to read
         public String getWeatherSummary() {
             return period.temperature + "° " + period.shortForecast;
         }
+        //Same logic to format the wind with the wind speed and the wind direction in the same line, user ready
         public String getWind() { return period.windSpeed + " " + period.windDirection; }
+        //Same logic but first checks that if there is any precipitation, it returns the percentage with the "%" symbol but if not then "0%"
         public String getPrecip() {
             return (period.probabilityOfPrecipitation != null ? period.probabilityOfPrecipitation.value : 0) + "%";
         }
     }
     
-    //Proxy design patter
+    //Proxy design pattern
     //Defining the proxy class and static because it is nested
     static class WeatherServiceProxy {
     	//storage arrays
