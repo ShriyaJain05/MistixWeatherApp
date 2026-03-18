@@ -44,7 +44,7 @@ public class WeatherAPI {
     
     ///added this
     public static ArrayList<Period> getHourlyForecast(String region, int gridx, int gridy) {
-        // 1. Target the /hourly endpoint [cite: 5, 13]
+        // Target the hourly end
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://api.weather.gov/gridpoints/" + region + "/" + gridx + "," + gridy + "/forecast/hourly"))
                 .header("User-Agent", "MistixApp") // NWS requirement [cite: 15]
@@ -67,7 +67,6 @@ public class WeatherAPI {
 
     private static Root getHourlyObject(String json) {
         ObjectMapper om = new ObjectMapper();
-        // This setting is the "magic fix" for parsing errors
         om.configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         
         try {

@@ -271,20 +271,19 @@ public class JavaFX extends Application {
         Label hourlyHeader = new Label("Next 6 Hours");
         hourlyHeader.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
         
-        
+        //setting up the next 6 hour boxes
         HBox hourlyHBox = new HBox(12);
         hourlyHBox.setStyle("-fx-alignment: center;");
 
-        //logic to determine which 6 hours to show
-        int startIndex = 0;
+        //logic to determine which 6 hours to show HERE
+        int startIndex = -1;
         java.time.ZonedDateTime now = java.time.ZonedDateTime.now(CHICAGO_ZONE);
+        java.time.LocalDate selected = selectedDay.startTime.toInstant().atZone(CHICAGO_ZONE).toLocalDate();
 
         //if selected day is today, start from current hour
-        boolean isToday = selectedDay.isDaytime &&
-                selectedDay.startTime.toInstant().atZone(CHICAGO_ZONE).toLocalDate()
-                        .equals(now.toLocalDate());
+        boolean isSelectedDayToday = selected.equals(now.toLocalDate());
 
-        if (isToday) {
+        if (isSelectedDayToday) {//start from the current hour
             for (int i = 0; i < hourlyForecast.size(); i++) {
                 java.time.ZonedDateTime hourTime = hourlyForecast.get(i).startTime.toInstant().atZone(CHICAGO_ZONE);
                 if (!hourTime.isBefore(now)) {
@@ -298,7 +297,7 @@ public class JavaFX extends Application {
         else {
             for (int i = 0; i < hourlyForecast.size(); i++) {
                 java.time.ZonedDateTime hourTime = hourlyForecast.get(i).startTime.toInstant().atZone(CHICAGO_ZONE);
-                if (hourTime.getHour() >= 8) {
+                if (hourTime.toLocalDate().equals(selected) && hourTime.getHour() >= 8) {
                     startIndex = i;
                     break;
                 }
@@ -306,10 +305,11 @@ public class JavaFX extends Application {
         }
 
         //add next 6 hours
-        for (int i = startIndex; i < startIndex + 6 && i < hourlyForecast.size(); i++) {
-            hourlyHBox.getChildren().add(createHourlyBox(hourlyForecast.get(i)));
+        if(startIndex != -1) {
+            for (int i = startIndex; i < startIndex + 6 && i < hourlyForecast.size(); i++) {
+                hourlyHBox.getChildren().add(createHourlyBox(hourlyForecast.get(i)));
+            }
         }
-
         //the box to hold the percipitation and wind boxes
         HBox detailsRow = new HBox(20);
         detailsRow.setStyle("-fx-alignment: center;");
