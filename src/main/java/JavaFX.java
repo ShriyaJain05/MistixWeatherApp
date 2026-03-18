@@ -118,6 +118,7 @@ public class JavaFX extends Application {
 
         //creating and style the Day button 
         Button headerBtn = new Button(headerText);
+        headerBtn.setCursor(javafx.scene.Cursor.HAND); //makes button look clickable so user knows when to click
         headerBtn.setStyle(
                 "-fx-font-size:18px;" +
                 "-fx-font-weight:bold;" +
@@ -259,6 +260,7 @@ public class JavaFX extends Application {
 
         //button to toggle temperature unit
         Button unitToggle = new Button(isCelsius ? "Switch to °F" : "Switch to °C");
+        unitToggle.setCursor(javafx.scene.Cursor.HAND); //makes button look clickable so user knows when to click
         unitToggle.setStyle("-fx-background-color:#4facfe; -fx-text-fill:white; -fx-font-weight:bold; " +
                 "-fx-padding:6 14; -fx-background-radius:10;");
 
@@ -323,6 +325,7 @@ public class JavaFX extends Application {
 
         //creating the back button to go between scenes
         Button backBtn = new Button("← Go Back");
+        backBtn.setCursor(javafx.scene.Cursor.HAND);//makes button look clickable so user knows when to click
         backBtn.setStyle("-fx-background-color: #4facfe; -fx-text-fill: white; -fx-font-weight: bold; " +
                          "-fx-padding: 10 20; -fx-background-radius: 10; -fx-cursor: hand;");
         backBtn.setOnAction(e -> {
