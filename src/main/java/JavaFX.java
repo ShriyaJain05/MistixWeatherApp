@@ -106,7 +106,7 @@ public class JavaFX extends Application {
 
         mainLayout.getChildren().addAll(welcome, h1);
 
-        scene1 = new Scene(mainLayout, 850, 650);
+        scene1 = new Scene(mainLayout);
     }
     
 	
@@ -361,7 +361,7 @@ public class JavaFX extends Application {
                 hourlyHeader, hourlyHBox, detailsRow, backBtn);
         mainOuter.getChildren().add(card);
 
-        scene2 = new Scene(mainOuter, 850, 750); //size check
+        scene2 = new Scene(mainOuter); //size check
     }
  
     //creating the hourly boxes for the next 6 hours, 6 different sections that each have the 
