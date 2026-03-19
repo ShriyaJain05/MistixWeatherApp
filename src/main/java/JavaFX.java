@@ -48,7 +48,6 @@ public class JavaFX extends Application {
         
         if (dailyForecast == null) throw new RuntimeException("Forecast did not load");
 
-
       //initialize scene 1
         setupScene1();
         window.setScene(scene1);
@@ -114,7 +113,6 @@ public class JavaFX extends Application {
     private VBox createWeatherColumn(Period dayData, Period nightData, boolean isFirst) {
         //adapters for both Day and Night
         WeatherAdapter dayAdapter = new WeatherAdapter(dayData);
-        WeatherAdapter nightAdapter = new WeatherAdapter(nightData);
 
         //setting up the header text to show which day it is.
         String headerText;
@@ -151,10 +149,10 @@ public class JavaFX extends Application {
         );
         headerBtn.setMaxWidth(Double.MAX_VALUE);
         headerBtn.setOnAction(e -> {
-            wasFullScreen = window.isFullScreen(); //remember state
-            setupScene2(dayData);
+            setupScene2(dayData); 
             window.setScene(scene2);
-            window.setFullScreen(wasFullScreen); //restore state
+            window.setFullScreenExitHint(""); // Removes the "Press ESC to exit" popup
+            window.setFullScreen(true);
         });
 
         //making the labels for each container and the style
@@ -290,6 +288,8 @@ public class JavaFX extends Application {
             isCelsius = !isCelsius; //flip unit
             setupScene2(selectedDay); //refresh scene
             window.setScene(scene2);
+            window.setFullScreenExitHint(""); // Removes the "Press ESC to exit" popup
+            window.setFullScreen(true);
         });
 
         Label hourlyHeader = new Label("Next 6 Hours");
@@ -334,7 +334,7 @@ public class JavaFX extends Application {
                 hourlyHBox.getChildren().add(createHourlyBox(hourlyForecast.get(i)));
             }
         }
-        //the box to hold the percipitation and wind boxes
+        //the box to hold the precipitation and wind boxes
         HBox detailsRow = new HBox(20);
         detailsRow.setStyle("-fx-alignment: center;");
 
@@ -352,7 +352,8 @@ public class JavaFX extends Application {
                          "-fx-padding: 10 20; -fx-background-radius: 10; -fx-cursor: hand;");
         backBtn.setOnAction(e -> {
             window.setScene(scene1);
-            window.setFullScreen(wasFullScreen); //restore state
+            window.setFullScreenExitHint(""); // Removes the "Press ESC to exit" popup
+            window.setFullScreen(true);
         });
 
         //getting all the information and putting it into the box
