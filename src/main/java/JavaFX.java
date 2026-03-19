@@ -65,14 +65,36 @@ public class JavaFX extends Application {
         h1.setStyle("-fx-alignment: center;");
 
         int columnsAdded = 0;
-        for (int i = 0; i < dailyForecast.size() - 1 && columnsAdded < 3; i++) {
-            Period dayP = dailyForecast.get(i);
-            Period nightP = dailyForecast.get(i + 1);
-
-            if (dayP.isDaytime && !nightP.isDaytime) {
-                h1.getChildren().add(createWeatherColumn(dayP, nightP, columnsAdded == 0));
+        int i = 0;
+        
+        //had problems with the current day being the following day after 8PM so had to fix
+        while(i < dailyForecast.size() && columnsAdded < 3) {
+            Period FirstP = dailyForecast.get(i);
+            
+            //First case is when it is after 8PM
+            if (!FirstP.isDaytime && columnsAdded == 0) {
+            	//when its night we still want it to be the same day so we use this temp day the pass through
+                h1.getChildren().add(createWeatherColumn(FirstP, FirstP, true));
                 columnsAdded++;
                 i++;
+            }
+            
+            //Second case is for the regular night and day temps
+            else if(i + 1 < dailyForecast.size()) {
+            	 Period dayP = dailyForecast.get(i);
+                 Period nightP = dailyForecast.get(i + 1);
+                 
+                 if (dayP.isDaytime && !nightP.isDaytime) {
+                     h1.getChildren().add(createWeatherColumn(dayP, nightP, columnsAdded == 0));
+                     columnsAdded++;
+                     i += 2; //skipping both day and night
+                 }
+                 else {
+                	 i++;
+                 }
+            }
+            else {
+            	i++;
             }
         }
 
